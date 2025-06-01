@@ -1,23 +1,75 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
+import Layout from '../layouts/BasicLayout.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>marukaz</h1>
-			<p>
-				Software Developer
-			</p>
-		</main>
-		<Footer />
-	</body>
-</html>
+<Layout
+	title={SITE_TITLE}
+	description={SITE_DESCRIPTION}
+>
+	<style>
+		.nav-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+			gap: 2rem;
+			margin-top: 2rem;
+		}
+		.nav-card {
+			background: white;
+			border-radius: 12px;
+			padding: 2rem;
+			box-shadow: var(--box-shadow);
+			transition: transform 0.2s ease, box-shadow 0.2s ease;
+			text-decoration: none;
+			color: inherit;
+		}
+		.nav-card:hover {
+			transform: translateY(-4px);
+			box-shadow: 0 8px 32px rgba(var(--gray), 25%);
+			text-decoration: none;
+		}
+		.nav-card h3 {
+			color: rgb(var(--accent));
+			margin: 0 0 1rem 0;
+			font-size: 1.5rem;
+			font-weight: 600;
+		}
+		.nav-card p {
+			margin: 0;
+			color: rgb(var(--gray-dark));
+			line-height: 1.6;
+		}
+		.welcome-text {
+			text-align: center;
+			color: rgb(var(--gray-dark));
+			font-size: 1.125rem;
+			margin-bottom: 3rem;
+		}
+	</style>
+
+	<div class="welcome-text">
+		<p>{SITE_DESCRIPTION}</p>
+	</div>
+
+	<div class="nav-grid">
+		<a href="/" class="nav-card">
+			<h3>🏠 Home</h3>
+			<p>今あなたが見ているページです。サイトのトップページです。</p>
+		</a>
+
+		<a href="/blog" class="nav-card">
+			<h3>📝 Blog</h3>
+			<p>技術記事などを公開していく予定です。</p>
+		</a>
+
+		<a href="/about" class="nav-card">
+			<h3>👤 About</h3>
+			<p>私のプロフィールについて紹介しています。</p>
+		</a>
+
+		<a href="/kani" class="nav-card">
+			<h3>🦀 Game</h3>
+			<p>ブラウザで遊べるカニカニパニックゲーム。ココナッツを集めてラッコを避けよう！</p>
+		</a>
+	</div>
+</Layout>

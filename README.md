@@ -1,6 +1,6 @@
 # marukaz
 
-My homepage (WIP)
+My personal website.
 
 ## Project Structure
 
