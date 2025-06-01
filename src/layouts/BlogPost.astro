@@ -42,6 +42,32 @@ const { title, description, pubDate, updatedDate } = Astro.props;
 			.last-updated-on {
 				font-style: italic;
 			}
+			.share-section {
+				margin-top: 3rem;
+				padding-top: 2rem;
+				border-top: 1px solid rgb(var(--gray-light));
+				text-align: center;
+			}
+			.share-button {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				background: #1da1f2;
+				color: white;
+				padding: 0.75rem 1.5rem;
+				border-radius: 8px;
+				text-decoration: none;
+				font-weight: 500;
+				transition: background-color 0.2s ease;
+			}
+			.share-button:hover {
+				background: #1a91da;
+				color: white;
+			}
+			.share-button svg {
+				width: 20px;
+				height: 20px;
+			}
 		</style>
 	</head>
 
@@ -65,9 +91,35 @@ const { title, description, pubDate, updatedDate } = Astro.props;
 						<hr />
 					</div>
 					<slot />
+					<div class="share-section">
+						<a 
+							href="" 
+							target="_blank" 
+							rel="noopener noreferrer" 
+							class="share-button"
+							id="twitter-share"
+						>
+							<svg viewBox="0 0 24 24" fill="currentColor">
+								<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+							</svg>
+							Twitterで共有
+						</a>
+					</div>
 				</div>
 			</article>
 		</main>
 		<Footer />
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				const twitterShare = document.getElementById('twitter-share');
+				if (twitterShare) {
+					const pageTitle = document.title;
+					const pageUrl = window.location.href;
+					const shareText = `${pageTitle} ${pageUrl}`;
+					const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+					twitterShare.href = twitterUrl;
+				}
+			});
+		</script>
 	</body>
 </html>
