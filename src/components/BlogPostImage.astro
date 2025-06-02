@@ -1,0 +1,18 @@
+---
+import { Image } from 'astro:assets';
+
+const {src, ...attrs} = Astro.props;
+---
+
+<!-- https://docs.astro.build/en/guides/images/#setting-default-values -->
+
+<!-- TS2322を無視 -->
+{/* @ts-ignore */}
+<Image src={src} {...attrs} />
+
+<style>
+  img, svg {
+    margin: auto;
+    display: block;
+  }
+</style>

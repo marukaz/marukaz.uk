@@ -1,7 +1,96 @@
 ---
-title: "First Post"
-description: "初めての投稿、Astroとcloudflareとclaude codeについて"
-pubDate: "Jul 08 2022"
+title: "Claude Codeで作った個人サイトをCloudflare Workersでホスティングしてみた"
+description: "Claude CodeがAstroテンプレートをベースに書いたホームページをCloudflare Workersでホスティングしてみた"
+pubDate: "Jun 01 2025"
 ---
 
-工事中
+import BlogPostImage from '../../components/BlogPostImage.astro';
+
+最近Claude Codeがアツいらしいぞということで、Cline (Roo Code) を試してた時に結局使い切らなかったクレジットも残ってたので、Claude Codeを使ってみることにした。
+
+とはいえ、CursorやCline、Julesなどの他のコーディングエージェントを試した時には毎回複雑なものを作ろうとして途中でLLMが動かないコードを生成して直せなくなり詰んでたので、
+今回はまずシンプルなものを作ることにした。それがこのウェブサイトです。
+
+### ホスティング
+
+せっかく作るなら公開したいということで、すでに他にもサイトを公開するのに使っているCloudflareでドメインを取得した。
+
+import domainRegistrarImage from '../../assets/images/blog/domain-registrar.png';
+
+<BlogPostImage src={domainRegistrarImage} alt="Cloudflareでのドメイン取得画面" />
+
+marukazというハンドルネームは本名からきていて、苗字後半部分のmaruに名前のKazukiの前半部分を足したものなのだが、奇跡的に一番安いukドメインが噛み合っているので、marukaz.ukというドメインを取得した。
+
+その後、Cloudflare Workersを使ってホスティングすることにした。以前はCloudflare Pagesを使っていたが、最近はWorkersの方がいいらしい（Pagesを作ろうとすると[比較表へのリンク](https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/#compatibility-matrix)とともにWorkersを使った方がいいと表示される）。
+
+Workersはアプリケーションを作る時にテンプレートを選ぶことができるんだけど、AstroのテンプレートにまさにBuild a personal website, blog, or portfolio with Astro.と書いてあり、一度Astroを使ってみたいとも思っていたので、このテンプレートを選んでみた。
+
+import astroImage from '../../assets/images/blog/astro-starter.png';
+
+<BlogPostImage src={astroImage} alt="Astroのテンプレート" />
+
+
+なのでちょこちょこいじってはいるが、このサイトのデザインはこのテンプレートをベースにしている。
+
+テンプレートを選んでGitHubリポジトリの名前を入力してボタンを押せば、勝手にリポジトリが作成されてテンプレートがpushされ、サイトがデプロイされる。
+以降はGitHubリポジトリに変更をpushするだけで自動的にデプロイされる。
+
+あとはSettingsのドメイン設定で、先ほど取得したドメインを追加すれば、marukaz.ukでサイトが公開される。
+
+### Claude Code
+
+テンプレートを使ったため最初からブログやAboutページなどが用意されていたので、ウェブサイトのタイトルなど人間が埋めるべき箇所を自分で書いたあと、
+Claude Codeに指示を出していく。
+
+LinkedInのアイコンを追加したいが既存のアイコンがsvgだったので、描けるなら描いて、描けないなら検索して探してきてほしいと指示を出すと、
+ちゃんと検索して見つけたSVGアイコンを追加してくれた。
+
+import linkedinImage from '../../assets/images/blog/search-linkedin.png';
+
+<BlogPostImage src={linkedinImage} alt="LinkedInのアイコンを実装している" />
+
+あと、スマホで表示するとヘッダーの表示が崩れていたので、ハンバーガーメニューも実装してもらった。
+
+import hamburgerMenuImage1 from '../../assets/images/blog/hamburger-menu-1.png';
+
+<BlogPostImage src={hamburgerMenuImage1} alt="ハンバーガーメニューを実装している" />
+
+ただ実装してほしいと指示しただけで、ちゃんとメニュー外をクリックするとハンバーガーメニューが閉じるようにしてくれた。
+
+import hamburgerMenuImage2 from '../../assets/images/blog/hamburger-menu-2.png';
+
+<BlogPostImage src={hamburgerMenuImage2} alt="メニュー外をクリックするとハンバーガーメニューが閉じる" />
+
+僕が大学生のときに学校の課題のプロジェクトチームのウェブサイトを作ったときはこの仕様がないと友達からクレームが来たので、
+少なくともLLMは学生時代の頃の自分より気が利いているなと思った。
+
+一方で、うまくいかなかったところもあった。
+
+今読んでいるこのブログ記事にも画像が表示されているが、デフォルトでは画像が左寄せになっていて、中央寄せにしたいと指示を出すと、
+素朴にcssを追加していた。しかし表示が変わらなかったのでそう伝えると、 `!important` を連打したり、とにかくありえそうなcssを追加しまくっており、
+HTMLを教えたりCloud Codeの「thinkして」も使ってみたりもしたが、最終的にこの記事のImageコンポーネントをそれぞれ直接divで囲んで中央寄せにしていた。
+
+しかたがないので自分で調べたところ、 [現在、すべてのImageコンポーネントに対してデフォルト値を指定する方法はない](https://docs.astro.build/ja/guides/images/#%E3%83%87%E3%83%95%E3%82%A9%E3%83%AB%E3%83%88%E5%80%A4%E3%81%AE%E8%A8%AD%E5%AE%9A)
+と公式のドキュメントに書いてあり、代替案として別のAstroコンポーネントでラップする方法が紹介されていた。
+できれば勝手にこれを調べてやってほしいところだが、まだそこまで賢くはないようだ。
+
+あとこれは細かいことだが、日本語フォントをもうちょっとかっこいいやつにしたいと指示を出すと、Noto Sans JPを選んでくれた。
+しかし、Noto Sans JPは良くも悪くも今となっては王道のフォントなので、もう少し個性的なフォントを選んでほしかった。
+結局Geminiに聞いて `Zen Kaku Gothic New` を使うことにした。
+とはいえ、これはClaude Codeのせいではなく、当たり前だが原理的にデザインや感性の問題は自分でなんとかするか、もっと明確な指示を出す必要がある。
+
+### Gemini Canvas
+
+せっかくAIに作ってもらってるのにコンテンツがブログとプロフィールだけではさみしいと思い、Gemini Canvasにゲームを作ってもらうことにした。
+
+「カニが歩いて、椰子の実を取ると１点、ラッコにぶつかるとゲームオーバーのアプリ 」という曖昧な指示を出すと、ちゃんとゲームを生成してくれた。
+ヘッダーの「[Game](/kani)」リンクをクリックすると遊べるゲームがそれである。
+
+サイト上に表示するにあたってはまずGeminiにAstroコンポーネントに書き直してもらい、それからさらにClaude Codeに指示を出して、
+ゲームの難易度や仕様を調整してもらった。パラメーター調整だけはやっぱり自分がいじったほうがよかったので手でやった。
+
+### まとめ
+
+その他さまざまな細かい修正をClaude Codeにしてもらい、最終的にこのサイトが完成した。だいたい5-10ドルくらいのクレジットを使った。
+時間にしても、数時間で完成したので、かなり効率的にサイトを作ることができた（このブログを書くのが一番時間がかかっているかもしれない）。
+まだClaude Opus 4の性能の限界を感じることはなかったので、今度はもう少し複雑なものを作ってみたい。

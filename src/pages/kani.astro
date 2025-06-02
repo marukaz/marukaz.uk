@@ -185,7 +185,7 @@ import Layout from '../layouts/BasicLayout.astro';
             y: 0, 
             width: 50,
             height: 40,
-            speed: 30,
+            speed: 50,
             emoji: '🦀',
             fontSize: 40
         };
@@ -236,7 +236,7 @@ import Layout from '../layouts/BasicLayout.astro';
                 cancelAnimationFrame(animationFrameId);
             }
             lastItemSpawnTime = Date.now(); 
-            itemSpawnInterval = 1500; 
+            itemSpawnInterval = 600; 
             gameLoop();
         }
 
@@ -268,8 +268,8 @@ import Layout from '../layouts/BasicLayout.astro';
             };
             items.push(item);
 
-            if (itemSpawnInterval > 600) {
-                itemSpawnInterval -= 15; 
+            if (itemSpawnInterval > 100) {
+                itemSpawnInterval -= 10; 
             }
         }
 
