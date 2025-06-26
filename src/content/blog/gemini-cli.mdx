@@ -49,3 +49,20 @@ import otterSizeImage from '../../assets/images/blog/otter-size.png';
 <BlogPostImage src={otterSizeImage} alt="ラッコの当たり判定を小さくした" />
 
 今日はここまで。次はワニワニパニックリスペクトで、今日のハイスコアとか表示してみたい。DBが必要なコードをgemini-cliは書けるだろうか。
+
+……と思ったらCIがビルドに失敗している。どうもテストで警告が出たのを修正してもらった時にcloudflareのプラグインを消したのがだめだったっぽい。
+Warningメッセージには必要ない的なことが書いてあったので消して大丈夫かなと思ったが、そうじゃなかったよう。
+消したやつ元に戻してとgemini-cliに頼んだらgit logを見て復元してくれた。
+なんかついでにテストが失敗したといって型エラーを解決しはじめたが、まあありがたいのでそのままやらせておく。
+
+import cloudflareFixImage from '../../assets/images/blog/cloudflare-fix.png';
+
+<BlogPostImage src={cloudflareFixImage} alt="cloudflareのプラグインを復元した" />
+
+　
+
+import typeFixImage from '../../assets/images/blog/type-fix.png';
+
+<BlogPostImage src={typeFixImage} alt="型エラーを解決してくれた" />
+
+作業が終わったあとpushしたら無事デプロイに成功した。
