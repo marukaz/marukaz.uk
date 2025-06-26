@@ -17,5 +17,10 @@
   "observability": {
     "enabled": true
   },
-  "upload_source_maps": true
+  "upload_source_maps": true,
+  "triggers": {
+    "crons": [
+      "0 15 * * *"
+    ]
+  }
 }

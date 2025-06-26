@@ -24,10 +24,12 @@
     "typescript": "^5.8.3"
   },
   "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.8.47",
     "@playwright/test": "^1.53.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/preact": "^3.2.4",
     "@vitest/ui": "^3.2.4",
+    "happy-dom": "^18.0.1",
     "jsdom": "^26.1.0",
     "vitest": "^3.2.4",
     "wrangler": "^4.22.0"
@@ -40,7 +42,8 @@
     "deploy": "wrangler deploy",
     "dev": "astro dev",
     "preview": "astro build && wrangler dev",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:worker": "vitest run -c vitest.config.worker.ts",
     "test:ui": "vitest --ui",
     "test:e2e": "playwright test"
   },

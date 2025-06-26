@@ -1,4 +1,5 @@
 
+/** @vitest-environment node */
 import type { Env } from 'hono';
 import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import { getPlatformProxy, type PlatformProxy } from 'wrangler';
