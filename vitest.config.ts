@@ -1,5 +1,3 @@
-/// <reference types="vitest" />
-/// <reference types="vitest" />
 import { getViteConfig } from 'astro/config';
 
 export default getViteConfig({
@@ -7,6 +5,7 @@ export default getViteConfig({
     environment: 'happy-dom',
     setupFiles: './tests/setup.ts',
     include: ['src/**/*.test.ts', 'tests/**/*.test.ts'],
-    exclude: ['**/node_modules/**', '**/dist/**', 'src/pages/_worker.test.ts'],
+        exclude: ['**/node_modules/**', '**/dist/**', 'src/pages/_worker.test.ts'],
+    pool: 'forks',
   },
 });
