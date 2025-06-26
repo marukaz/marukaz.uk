@@ -111,6 +111,10 @@ import Layout from '../layouts/BasicLayout.astro';
     <div class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
 
     <div class="w-full max-w-2xl text-center mb-4">
+        <div class="flex justify-center gap-4 text-gray-600 text-lg mb-2">
+            <div id="todayHighScore">今日のハイスコア: 0</div>
+            <div id="allTimeHighScore">歴代最高スコア: 0</div>
+        </div>
         <p class="text-gray-700 mt-2">ココナッツ🥥を集めて、ラッコ🦦を避けよう！</p>
         <div id="scoreBoard" class="score-board mt-2">スコア: 0</div>
     </div>
@@ -150,8 +154,10 @@ import Layout from '../layouts/BasicLayout.astro';
             const touchControls = document.getElementById('touchControls') as HTMLDivElement | null;
             const startScreen = document.getElementById('startScreen') as HTMLDivElement | null;
             const startButton = document.getElementById('startButton') as HTMLButtonElement | null;
+            const todayHighScore = document.getElementById('todayHighScore') as HTMLDivElement | null;
+            const allTimeHighScore = document.getElementById('allTimeHighScore') as HTMLDivElement | null;
 
-            if (!canvas || !scoreBoard || !gameOverModal || !finalScoreDisplay || !restartButton || !quitButton || !leftButton || !rightButton || !touchControls || !startScreen || !startButton) {
+            if (!canvas || !scoreBoard || !gameOverModal || !finalScoreDisplay || !restartButton || !quitButton || !leftButton || !rightButton || !touchControls || !startScreen || !startButton || !todayHighScore || !allTimeHighScore) {
                 console.error("必要な要素がページに見つかりません。");
                 return;
             }
@@ -201,6 +207,41 @@ import Layout from '../layouts/BasicLayout.astro';
             let itemSpawnInterval = 1500;
             let lastItemSpawnTime = 0;
 
+            async function loadScores() {
+                try {
+                    const response = await fetch('/api/scores');
+                    if (!response.ok) {
+                        throw new Error('スコアの取得に失敗しました。');
+                    }
+                    const scores = (await response.json()) as {
+                        current_score: number;
+                        high_score: number;
+                    };
+                    if (todayHighScore) {
+                        todayHighScore.textContent = `今日のハイスコア: ${scores.current_score}`;
+                    }
+                    if (allTimeHighScore) {
+                        allTimeHighScore.textContent = `歴代最高スコア: ${scores.high_score}`;
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
+            async function sendScore(newScore: number) {
+                try {
+                    await fetch('/api/scores', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ score: newScore }),
+                    });
+                } catch (error) {
+                    console.error('スコアの送信に失敗しました。', error);
+                }
+            }
+
             function startGame() {
                 if (!startScreen || !canvas || !touchControls) return;
                 startScreen.style.display = 'none';
@@ -223,6 +264,7 @@ import Layout from '../layouts/BasicLayout.astro';
                 startScreen.style.display = 'block';
                 score = 0;
                 updateScoreBoard();
+                loadScores();
             }
 
             function init() {
@@ -317,7 +359,7 @@ import Layout from '../layouts/BasicLayout.astro';
                 drawEmoji(crab.emoji, crab.x, crab.y + crab.height, crab.fontSize);
             }
 
-            function gameOver() {
+            async function gameOver() {
                 gameRunning = false;
                 if (animationFrameId) {
                     cancelAnimationFrame(animationFrameId);
@@ -328,6 +370,8 @@ import Layout from '../layouts/BasicLayout.astro';
                 if (gameOverModal) {
                     gameOverModal.style.display = 'flex';
                 }
+                await sendScore(score);
+                await loadScores();
             }
 
             function gameLoop() {
@@ -401,6 +445,7 @@ import Layout from '../layouts/BasicLayout.astro';
             });
             
             updateScoreBoard();
+            loadScores();
         });
     </script>
     

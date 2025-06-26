@@ -7,6 +7,7 @@ export default getViteConfig({
     // globals: true,
     environment: 'node',
     setupFiles: './tests/setup.ts',
-    exclude: ['**/node_modules/**', '**/dist/**', '**/tests/**/*.spec.ts'],
+    include: ['tests/**/*.test.ts'],
+    exclude: ['**/node_modules/**', '**/dist/**'],
   },
 });

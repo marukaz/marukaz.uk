@@ -7,6 +7,13 @@
     "directory": "./dist",
     "binding": "ASSETS"
   },
+  "kv_namespaces": [
+    {
+      "binding": "marukazuk",
+      "id": "c24a05ff19db4da4affd9cf1a3d7c415",
+      "preview_id": "c24a05ff19db4da4affd9cf1a3d7c415"
+    }
+  ],
   "observability": {
     "enabled": true
   },
