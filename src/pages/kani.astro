@@ -17,6 +17,9 @@ import Layout from '../layouts/BasicLayout.astro';
             display: block;
             margin: 0 auto;
             border-radius: 0.5rem;
+            width: 100%;
+            max-width: 600px;
+            height: auto;
         }
         .modal {
             display: none; /* 初期状態では非表示 */
@@ -153,30 +156,10 @@ import Layout from '../layouts/BasicLayout.astro';
         let gameStarted = false;
         let animationFrameId;
 
-        // キャンバスのサイズ設定
-        function resizeCanvas() {
-            const parentElementStyle = window.getComputedStyle(canvas.parentElement);
-            const parentPaddingLeft = parseFloat(parentElementStyle.paddingLeft);
-            const parentPaddingRight = parseFloat(parentElementStyle.paddingRight);
-            const availableWidth = canvas.parentElement.clientWidth - parentPaddingLeft - parentPaddingRight;
-            
-            let targetWidth = availableWidth > 600 ? 600 : availableWidth * 0.98;
-            if (targetWidth < 300) targetWidth = 300;
-
-            canvas.width = targetWidth;
-            canvas.height = canvas.width * 0.65;
-
-            if (canvas.height > window.innerHeight * 0.65) {
-                canvas.height = window.innerHeight * 0.65;
-                canvas.width = canvas.height / 0.65;
-            }
-            touchControls.style.maxWidth = `${canvas.width}px`;
-            
-            if (crab) { 
-                crab.y = canvas.height - crab.height - 10;
-            }
-        }
-        window.addEventListener('resize', resizeCanvas);
+        // キャンバスの解像度を固定
+        canvas.width = 600;
+        canvas.height = 390;
+        touchControls.style.maxWidth = `600px`;
         
 
         // キャラクター設定
@@ -193,7 +176,7 @@ import Layout from '../layouts/BasicLayout.astro';
         const items = [];
         const itemTypes = [
             { emoji: '🥥', type: 'coconut', points: 1, width: 30, height: 30, fontSize: 30 },
-            { emoji: '🦦', type: 'otter', points: -1, width: 40, height: 40, fontSize: 40 }
+            { emoji: '🦦', type: 'otter', points: -1, width: 30, height: 30, fontSize: 40 }
         ];
         let itemSpawnInterval = 1500;
         let lastItemSpawnTime = 0;
@@ -224,7 +207,6 @@ import Layout from '../layouts/BasicLayout.astro';
 
         // 初期化処理
         function init() {
-            resizeCanvas(); 
             crab.x = canvas.width / 2 - crab.width / 2;
             crab.y = canvas.height - crab.height - 10;
             score = 0;
@@ -402,7 +384,6 @@ import Layout from '../layouts/BasicLayout.astro';
         // 初期化（ゲームは開始しない）
         // Astroの<script>タグはデフォルトでページのコンテンツが読み込まれた後に実行されるため、
         // window.onload は不要です。
-        resizeCanvas();
         updateScoreBoard();
 
     </script>
