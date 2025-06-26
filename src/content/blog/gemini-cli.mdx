@@ -1,0 +1,51 @@
+---
+title: "gemini-cli使ってみた"
+description: "gemini-cli使ってみた"
+pubDate: "Jun 26 2025"
+---
+
+import BlogPostImage from '../../components/BlogPostImage.astro';
+
+[gemini-cli](https://github.com/google-gemini/gemini-cli) が出たということで、早速使ってみた。
+
+前回claude codeを使った時はinstructionを書かなかったので、今回は用意してみる。
+
+といっても自分で書くのではなく、gemini-cliの [GEMINI.md](https://github.com/google-gemini/gemini-cli/blob/main/GEMINI.md)
+をコピペしてきてgemini-cliにこのリポジトリ向けに調整してもらう。
+
+最初は
+
+「今GEMINI.mdに書いてあることはコピペしてきただけで、このリポジトリにはないコマンドも多く、また使っているフレームワークもReactではなくAstroです。なので、まずテストができるように必要なツールをインストールしてください。
+また、ReactではなくAstroを前提にGEMINI.mdを書き直してください。」
+
+と指示したものの、そしたら元の記述をほとんど消して、すでにあるコマンドを使うように書き直してきた。
+なので、
+
+「今GEMINI.mdに書いてあることはコピペしてきただけで、まだこのリポジトリでは使われていないテストフレームワークが使われています。今のこのリポジトリで使われているテ
+ストフレームワークとGEMINI.mdで使われているもののどちらがより良いか検討し、もしGEMINI.mdに書かれている手法のほうがAIエージェントにとって優れているなら、そちら
+に移行してください。」
+
+と指示を出し直したらちゃんとセットアップしてくれた。それからReactではなくAstroを前提にGEMINI.mdを書き直させたら、今度はTypeScriptに関する記述まで消してしまい、
+戻すように指示したらReactと文中に書かれたまま戻してきて……とちょっと意思疎通に苦労しながらもなんとか更新できた。
+
+せっかくテストフレームワークをセットアップしてくれたので、テストも書いてもらった。この時も警告が出てたので直してと頼んだらよくわからないことをやりはじめたけど、
+いつのまにか `gemini-2.5-flash` が使われてたのを `gemini-2.5-pro` に戻したらちゃんと直してくれた。さすがプロ。
+
+下準備ができたので、実際のコードを書いてもらう。
+
+以前作った [カニのゲーム](/kani) はススマホだとゲーム画面が小さくなって難易度が上がるという問題があったので修正を依頼。
+しかし、ラッコが上から落ちてくるというのがわからなかったのか、幅をちょっと調整するだけの変更を入れてくる。
+
+import geminiCliImage from '../../assets/images/blog/kani-fix-gemini.png';
+
+<BlogPostImage src={geminiCliImage} alt="gemini-cliの実行画面" />
+
+幅と高さが全く同じになる必要があると改めて指示したら、今度はそれなりにいい感じに変更してくれた。
+
+ついでにラッコの当たり判定ナーフしておく。
+
+import otterSizeImage from '../../assets/images/blog/otter-size.png';
+
+<BlogPostImage src={otterSizeImage} alt="ラッコの当たり判定を小さくした" />
+
+今日はここまで。次はワニワニパニックリスペクトで、今日のハイスコアとか表示してみたい。DBが必要なコードをgemini-cliは書けるだろうか。
