@@ -138,254 +138,270 @@ import Layout from '../layouts/BasicLayout.astro';
     </div>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreBoard = document.getElementById('scoreBoard');
-        const gameOverModal = document.getElementById('gameOverModal');
-        const finalScoreDisplay = document.getElementById('finalScore');
-        const restartButton = document.getElementById('restartButton');
-        const quitButton = document.getElementById('quitButton');
-        const leftButton = document.getElementById('leftButton');
-        const rightButton = document.getElementById('rightButton');
-        const touchControls = document.getElementById('touchControls');
-        const startScreen = document.getElementById('startScreen');
-        const startButton = document.getElementById('startButton');
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement | null;
+            const scoreBoard = document.getElementById('scoreBoard') as HTMLDivElement | null;
+            const gameOverModal = document.getElementById('gameOverModal') as HTMLDivElement | null;
+            const finalScoreDisplay = document.getElementById('finalScore') as HTMLParagraphElement | null;
+            const restartButton = document.getElementById('restartButton') as HTMLButtonElement | null;
+            const quitButton = document.getElementById('quitButton') as HTMLButtonElement | null;
+            const leftButton = document.getElementById('leftButton') as HTMLDivElement | null;
+            const rightButton = document.getElementById('rightButton') as HTMLDivElement | null;
+            const touchControls = document.getElementById('touchControls') as HTMLDivElement | null;
+            const startScreen = document.getElementById('startScreen') as HTMLDivElement | null;
+            const startButton = document.getElementById('startButton') as HTMLButtonElement | null;
 
-        let score = 0;
-        let gameRunning = false;
-        let gameStarted = false;
-        let animationFrameId;
-
-        // キャンバスの解像度を固定
-        canvas.width = 600;
-        canvas.height = 390;
-        touchControls.style.maxWidth = `600px`;
-        
-
-        // キャラクター設定
-        const crab = {
-            x: 50,
-            y: 0, 
-            width: 50,
-            height: 40,
-            speed: 50,
-            emoji: '🦀',
-            fontSize: 40
-        };
-
-        const items = [];
-        const itemTypes = [
-            { emoji: '🥥', type: 'coconut', points: 1, width: 30, height: 30, fontSize: 30 },
-            { emoji: '🦦', type: 'otter', points: -1, width: 30, height: 30, fontSize: 40 }
-        ];
-        let itemSpawnInterval = 1500;
-        let lastItemSpawnTime = 0;
-
-        // ゲーム開始処理
-        function startGame() {
-            startScreen.style.display = 'none';
-            canvas.style.display = 'block';
-            touchControls.style.display = 'flex';
-            gameStarted = true;
-            init();
-        }
-
-        // ゲーム終了処理
-        function quitGame() {
-            gameRunning = false;
-            gameStarted = false;
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-            }
-            gameOverModal.style.display = 'none';
-            canvas.style.display = 'none';
-            touchControls.style.display = 'none';
-            startScreen.style.display = 'block';
-            score = 0;
-            updateScoreBoard();
-        }
-
-        // 初期化処理
-        function init() {
-            crab.x = canvas.width / 2 - crab.width / 2;
-            crab.y = canvas.height - crab.height - 10;
-            score = 0;
-            items.length = 0;
-            gameRunning = true;
-            updateScoreBoard();
-            gameOverModal.style.display = 'none';
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-            }
-            lastItemSpawnTime = Date.now(); 
-            itemSpawnInterval = 600; 
-            gameLoop();
-        }
-
-        // スコア表示更新
-        function updateScoreBoard() {
-            scoreBoard.textContent = `スコア: ${score}`;
-        }
-
-        // アイテム（ココナッツ、アライグマ）を生成
-        function spawnItem() {
-            const now = Date.now();
-            if (now - lastItemSpawnTime < itemSpawnInterval) {
+            if (!canvas || !scoreBoard || !gameOverModal || !finalScoreDisplay || !restartButton || !quitButton || !leftButton || !rightButton || !touchControls || !startScreen || !startButton) {
+                console.error("必要な要素がページに見つかりません。");
                 return;
             }
-            lastItemSpawnTime = now;
 
-            const typeIndex = Math.random() < 0.7 ? 0 : 1;
-            const itemDetail = itemTypes[typeIndex];
-            const item = {
-                x: Math.random() * (canvas.width - itemDetail.width),
-                y: -itemDetail.height,
-                width: itemDetail.width,
-                height: itemDetail.height,
-                speed: 2 + Math.random() * 3,
-                emoji: itemDetail.emoji,
-                type: itemDetail.type,
-                points: itemDetail.points,
-                fontSize: itemDetail.fontSize
-            };
-            items.push(item);
-
-            if (itemSpawnInterval > 100) {
-                itemSpawnInterval -= 10; 
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                console.error("2Dコンテキストの取得に失敗しました。");
+                return;
             }
-        }
 
-        // アイテムの移動と描画
-        function updateItems() {
-            for (let i = items.length - 1; i >= 0; i--) {
-                const item = items[i];
-                item.y += item.speed;
+            let score = 0;
+            let gameRunning = false;
+            let gameStarted = false;
+            let animationFrameId: number | undefined;
 
-                if (item.y > canvas.height) {
-                    items.splice(i, 1);
-                    continue;
+            canvas.width = 600;
+            canvas.height = 390;
+            touchControls.style.maxWidth = `600px`;
+
+            const crab = {
+                x: 50,
+                y: 0, 
+                width: 50,
+                height: 40,
+                speed: 50,
+                emoji: '🦀',
+                fontSize: 40
+            };
+
+            interface Item {
+                x: number;
+                y: number;
+                width: number;
+                height: number;
+                speed: number;
+                emoji: string;
+                type: 'coconut' | 'otter';
+                points: number;
+                fontSize: number;
+            }
+
+            const items: Item[] = [];
+            const itemTypes = [
+                { emoji: '🥥', type: 'coconut', points: 1, width: 30, height: 30, fontSize: 30 },
+                { emoji: '🦦', type: 'otter', points: -1, width: 30, height: 30, fontSize: 40 }
+            ] as const;
+            let itemSpawnInterval = 1500;
+            let lastItemSpawnTime = 0;
+
+            function startGame() {
+                if (!startScreen || !canvas || !touchControls) return;
+                startScreen.style.display = 'none';
+                canvas.style.display = 'block';
+                touchControls.style.display = 'flex';
+                gameStarted = true;
+                init();
+            }
+
+            function quitGame() {
+                gameRunning = false;
+                gameStarted = false;
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
                 }
+                if (!gameOverModal || !canvas || !touchControls || !startScreen) return;
+                gameOverModal.style.display = 'none';
+                canvas.style.display = 'none';
+                touchControls.style.display = 'none';
+                startScreen.style.display = 'block';
+                score = 0;
+                updateScoreBoard();
+            }
 
-                if (
-                    crab.x < item.x + item.width &&
-                    crab.x + crab.width > item.x &&
-                    crab.y < item.y + item.height &&
-                    crab.y + crab.height > item.y
-                ) {
-                    if (item.type === 'coconut') {
-                        score += item.points;
-                        updateScoreBoard();
+            function init() {
+                if (!canvas || !gameOverModal) return;
+                crab.x = canvas.width / 2 - crab.width / 2;
+                crab.y = canvas.height - crab.height - 10;
+                score = 0;
+                items.length = 0;
+                gameRunning = true;
+                updateScoreBoard();
+                gameOverModal.style.display = 'none';
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                }
+                lastItemSpawnTime = Date.now(); 
+                itemSpawnInterval = 600; 
+                gameLoop();
+            }
+
+            function updateScoreBoard() {
+                if (scoreBoard) {
+                    scoreBoard.textContent = `スコア: ${score}`;
+                }
+            }
+
+            function spawnItem() {
+                if (!canvas) return;
+                const now = Date.now();
+                if (now - lastItemSpawnTime < itemSpawnInterval) {
+                    return;
+                }
+                lastItemSpawnTime = now;
+
+                const typeIndex = Math.random() < 0.7 ? 0 : 1;
+                const itemDetail = itemTypes[typeIndex];
+                const item: Item = {
+                    x: Math.random() * (canvas.width - itemDetail.width),
+                    y: -itemDetail.height,
+                    width: itemDetail.width,
+                    height: itemDetail.height,
+                    speed: 2 + Math.random() * 3,
+                    emoji: itemDetail.emoji,
+                    type: itemDetail.type,
+                    points: itemDetail.points,
+                    fontSize: itemDetail.fontSize
+                };
+                items.push(item);
+
+                if (itemSpawnInterval > 100) {
+                    itemSpawnInterval -= 10; 
+                }
+            }
+
+            function updateItems() {
+                if (!canvas) return;
+                for (let i = items.length - 1; i >= 0; i--) {
+                    const item = items[i];
+                    item.y += item.speed;
+
+                    if (item.y > canvas.height) {
                         items.splice(i, 1);
-                    } else if (item.type === 'otter') {
-                        gameOver();
-                        return; 
+                        continue;
+                    }
+
+                    if (
+                        crab.x < item.x + item.width &&
+                        crab.x + crab.width > item.x &&
+                        crab.y < item.y + item.height &&
+                        crab.y + crab.height > item.y
+                    ) {
+                        if (item.type === 'coconut') {
+                            score += item.points;
+                            updateScoreBoard();
+                            items.splice(i, 1);
+                        } else if (item.type === 'otter') {
+                            gameOver();
+                            return; 
+                        }
+                    }
+                    drawEmoji(item.emoji, item.x, item.y + item.height, item.fontSize);
+                }
+            }
+            
+            function drawEmoji(emoji: string, x: number, y: number, fontSize: number) {
+                if (!ctx) return;
+                ctx.font = `${fontSize}px Arial`;
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(emoji, x, y);
+            }
+
+            function drawCrab() {
+                drawEmoji(crab.emoji, crab.x, crab.y + crab.height, crab.fontSize);
+            }
+
+            function gameOver() {
+                gameRunning = false;
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                }
+                if (finalScoreDisplay) {
+                    finalScoreDisplay.textContent = `最終スコア: ${score}`;
+                }
+                if (gameOverModal) {
+                    gameOverModal.style.display = 'flex';
+                }
+            }
+
+            function gameLoop() {
+                if (!gameRunning || !canvas || !ctx) return;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height); 
+
+                spawnItem();
+                updateItems(); 
+                drawCrab();   
+                
+                if (gameRunning) {
+                    animationFrameId = requestAnimationFrame(gameLoop);
+                }
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (!gameRunning || !gameStarted || !canvas) return;
+                if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+                    crab.x -= crab.speed;
+                    if (crab.x < 0) crab.x = 0;
+                } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+                    crab.x += crab.speed;
+                    if (crab.x + crab.width > canvas.width) {
+                        crab.x = canvas.width - crab.width;
                     }
                 }
-                drawEmoji(item.emoji, item.x, item.y + item.height, item.fontSize);
-            }
-        }
-        
-        // 絵文字描画関数
-        function drawEmoji(emoji, x, y, fontSize) {
-            ctx.font = `${fontSize}px Arial`;
-            ctx.textBaseline = 'bottom';
-            ctx.fillText(emoji, x, y);
-        }
+            });
 
-        // カニの描画
-        function drawCrab() {
-            drawEmoji(crab.emoji, crab.x, crab.y + crab.height, crab.fontSize);
-        }
-
-        // ゲームオーバー処理
-        function gameOver() {
-            gameRunning = false;
-            cancelAnimationFrame(animationFrameId);
-            finalScoreDisplay.textContent = `最終スコア: ${score}`;
-            gameOverModal.style.display = 'flex';
-        }
-
-        // ゲームループ
-        function gameLoop() {
-            if (!gameRunning) return;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height); 
-
-            spawnItem();
-            updateItems(); 
-            drawCrab();   
-            
-            if (gameRunning) {
-                animationFrameId = requestAnimationFrame(gameLoop);
-            }
-        }
-
-        // キーボード操作
-        document.addEventListener('keydown', (e) => {
-            if (!gameRunning || !gameStarted) return;
-            if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+            function moveCrabLeft() {
+                if (!gameRunning || !gameStarted) return;
                 crab.x -= crab.speed;
                 if (crab.x < 0) crab.x = 0;
-            } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+            }
+
+            function moveCrabRight() {
+                if (!gameRunning || !gameStarted || !canvas) return;
                 crab.x += crab.speed;
                 if (crab.x + crab.width > canvas.width) {
                     crab.x = canvas.width - crab.width;
                 }
             }
+            
+            leftButton.addEventListener('touchstart', (e) => { e.preventDefault(); moveCrabLeft(); });
+            leftButton.addEventListener('click', (e) => { e.preventDefault(); moveCrabLeft(); });
+
+            rightButton.addEventListener('touchstart', (e) => { e.preventDefault(); moveCrabRight(); });
+            rightButton.addEventListener('click', (e) => { e.preventDefault(); moveCrabRight(); });
+
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (!gameRunning || !gameStarted || !canvas) return;
+                const touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+                if (touchX < canvas.width / 2) {
+                    moveCrabLeft();
+                } else {
+                    moveCrabRight();
+                }
+            });
+
+            startButton.addEventListener('click', () => {
+                startGame();
+            });
+
+            restartButton.addEventListener('click', () => {
+                init();
+            });
+
+            quitButton.addEventListener('click', () => {
+                quitGame();
+            });
+            
+            updateScoreBoard();
         });
-
-        // タッチ操作の共通処理
-        function moveCrabLeft() {
-            if (!gameRunning || !gameStarted) return;
-            crab.x -= crab.speed;
-            if (crab.x < 0) crab.x = 0;
-        }
-
-        function moveCrabRight() {
-            if (!gameRunning || !gameStarted) return;
-            crab.x += crab.speed;
-            if (crab.x + crab.width > canvas.width) {
-                crab.x = canvas.width - crab.width;
-            }
-        }
-        
-        // タッチボタン
-        leftButton.addEventListener('touchstart', (e) => { e.preventDefault(); moveCrabLeft(); });
-        leftButton.addEventListener('click', (e) => { e.preventDefault(); moveCrabLeft(); });
-
-        rightButton.addEventListener('touchstart', (e) => { e.preventDefault(); moveCrabRight(); });
-        rightButton.addEventListener('click', (e) => { e.preventDefault(); moveCrabRight(); });
-
-        // キャンバスへのタッチ操作 (左右分割)
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            if (!gameRunning || !gameStarted) return;
-            const touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
-            if (touchX < canvas.width / 2) {
-                moveCrabLeft();
-            } else {
-                moveCrabRight();
-            }
-        });
-
-        // ボタンイベントリスナー
-        startButton.addEventListener('click', () => {
-            startGame();
-        });
-
-        restartButton.addEventListener('click', () => {
-            init();
-        });
-
-        quitButton.addEventListener('click', () => {
-            quitGame();
-        });
-        
-        // 初期化（ゲームは開始しない）
-        // Astroの<script>タグはデフォルトでページのコンテンツが読み込まれた後に実行されるため、
-        // window.onload は不要です。
-        updateScoreBoard();
-
     </script>
     
     </div>

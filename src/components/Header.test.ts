@@ -1,11 +1,9 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import { expect, test, afterAll } from 'vitest';
+import { expect, test } from 'vitest';
 import Header from './Header.astro';
 
-let container: AstroContainer;
-
 test('Header component', async () => {
-	container = await AstroContainer.create();
+	const container = await AstroContainer.create();
 	const html = await container.renderToString(Header);
 
 	// サイトタイトルの確認

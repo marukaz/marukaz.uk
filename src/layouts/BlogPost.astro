@@ -112,7 +112,7 @@ const { title, description, pubDate, updatedDate } = Astro.props;
 		<Footer />
 		<script>
 			document.addEventListener('DOMContentLoaded', function() {
-				const twitterShare = document.getElementById('twitter-share');
+				const twitterShare = document.getElementById('twitter-share') as HTMLAnchorElement;
 				if (twitterShare) {
 					const pageTitle = document.title;
 					const pageUrl = window.location.href;

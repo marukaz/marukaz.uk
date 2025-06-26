@@ -172,7 +172,8 @@ import { SITE_TITLE } from '../consts';
 			
 			// メニュー外をクリックした時にメニューを閉じる
 			document.addEventListener('click', function(event) {
-				if (!event.target.closest('nav')) {
+				const target = event.target as HTMLElement;
+				if (target && !target.closest('nav')) {
 					mobileToggle.classList.remove('open');
 					navContent.classList.remove('open');
 				}
