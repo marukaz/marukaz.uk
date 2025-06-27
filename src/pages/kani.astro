@@ -6,7 +6,6 @@ import Layout from '../layouts/BasicLayout.astro';
 	title="カニカニパニック"
 	description="ココナッツを集めて、アライグマを避けるゲーム"
 >
-    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -106,6 +105,37 @@ import Layout from '../layouts/BasicLayout.astro';
                 font-size: 1.5rem;
             }
         }
+
+        /* 更新履歴セクションのスタイル */
+        .update-history-section {
+            margin-top: 3rem; /* ゲームとの間に余白 */
+            padding: 1.5rem; /* 内側の余白 */
+            border: 1px solid #ccc; /* 枠線 */
+            border-radius: 0.5rem; /* 角を丸く */
+            background-color: #f9f9f9; /* 背景色 */
+            max-width: 600px; /* 幅を制限 */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .update-history-section h2 {
+            font-size: 1.25rem; /* タイトルを小さく */
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .update-history-section ul {
+            list-style: disc;
+            padding-left: 1.25rem;
+        }
+
+        .update-history-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .update-history-section .date {
+            font-weight: bold;
+        }
     </style>
 
     <div class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
@@ -113,6 +143,7 @@ import Layout from '../layouts/BasicLayout.astro';
     <div class="w-full max-w-2xl text-center mb-4">
         <div class="flex justify-center gap-4 text-gray-600 text-lg mb-2">
             <div id="todayHighScore">今日のハイスコア: 0</div>
+            <div id="monthlyHighScore">今月のハイスコア: 0</div>
             <div id="allTimeHighScore">歴代最高スコア: 0</div>
         </div>
         <p class="text-gray-700 mt-2">ココナッツ🥥を集めて、ラッコ🦦を避けよう！</p>
@@ -155,9 +186,10 @@ import Layout from '../layouts/BasicLayout.astro';
             const startScreen = document.getElementById('startScreen') as HTMLDivElement | null;
             const startButton = document.getElementById('startButton') as HTMLButtonElement | null;
             const todayHighScore = document.getElementById('todayHighScore') as HTMLDivElement | null;
+            const monthlyHighScore = document.getElementById('monthlyHighScore') as HTMLDivElement | null;
             const allTimeHighScore = document.getElementById('allTimeHighScore') as HTMLDivElement | null;
 
-            if (!canvas || !scoreBoard || !gameOverModal || !finalScoreDisplay || !restartButton || !quitButton || !leftButton || !rightButton || !touchControls || !startScreen || !startButton || !todayHighScore || !allTimeHighScore) {
+            if (!canvas || !scoreBoard || !gameOverModal || !finalScoreDisplay || !restartButton || !quitButton || !leftButton || !rightButton || !touchControls || !startScreen || !startButton || !todayHighScore || !monthlyHighScore || !allTimeHighScore) {
                 console.error("必要な要素がページに見つかりません。");
                 return;
             }
@@ -216,9 +248,13 @@ import Layout from '../layouts/BasicLayout.astro';
                     const scores = (await response.json()) as {
                         current_score: number;
                         high_score: number;
+                        monthly_high_score: number;
                     };
                     if (todayHighScore) {
                         todayHighScore.textContent = `今日のハイスコア: ${scores.current_score}`;
+                    }
+                    if (monthlyHighScore) {
+                        monthlyHighScore.textContent = `今月のハイスコア: ${scores.monthly_high_score}`;
                     }
                     if (allTimeHighScore) {
                         allTimeHighScore.textContent = `歴代最高スコア: ${scores.high_score}`;
@@ -449,5 +485,12 @@ import Layout from '../layouts/BasicLayout.astro';
         });
     </script>
     
+    </div>
+
+    <div class="update-history-section">
+        <h2>更新履歴</h2>
+        <ul>
+            <li><span class="date">2025-06-28:</span> ゲームをリリースしました。</li>
+        </ul>
     </div>
 </Layout>

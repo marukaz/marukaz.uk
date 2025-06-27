@@ -8,11 +8,13 @@ export async function GET(context: APIContext) {
     const kv: KVNamespace = context.locals.runtime.env.marukazuk;
     const current_score = (await kv.get('current_score')) || 0;
     const high_score = (await kv.get('high_score')) || 0;
+    const monthly_high_score = (await kv.get('monthly_high_score')) || 0;
 
     return new Response(
       JSON.stringify({
         current_score: Number(current_score),
         high_score: Number(high_score),
+        monthly_high_score: Number(monthly_high_score),
       }),
       {
         status: 200,
@@ -32,9 +34,11 @@ export async function POST(context: APIContext) {
 
     const current_score_str = await kv.get('current_score');
     const high_score_str = await kv.get('high_score');
+    const monthly_high_score_str = await kv.get('monthly_high_score');
 
     let current_score = Number(current_score_str) || 0;
     let high_score = Number(high_score_str) || 0;
+    let monthly_high_score = Number(monthly_high_score_str) || 0;
 
     if (score > current_score) {
       current_score = score;
@@ -46,10 +50,16 @@ export async function POST(context: APIContext) {
       await kv.put('high_score', high_score.toString());
     }
 
+    if (score > monthly_high_score) {
+      monthly_high_score = score;
+      await kv.put('monthly_high_score', monthly_high_score.toString());
+    }
+
     return new Response(
       JSON.stringify({
         current_score,
         high_score,
+        monthly_high_score,
       }),
       {
         status: 200,

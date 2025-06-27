@@ -11,6 +11,14 @@ export default {
       } catch (e) {
         console.error('Cron job failed to reset the daily high score:', e);
       }
+    } else if (event.cron === '0 15 1 * *') {
+      try {
+        const kv = env.marukazuk;
+        await kv.put('monthly_high_score', '0');
+        console.log('Cron job: Monthly high score has been reset successfully.');
+      } catch (e) {
+        console.error('Cron job failed to reset the monthly high score:', e);
+      }
     }
   },
 };

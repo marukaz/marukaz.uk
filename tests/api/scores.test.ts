@@ -20,12 +20,14 @@ describe('/api/scores', () => {
   beforeEach(async () => {
     await platform.env.marukazuk.delete('current_score');
     await platform.env.marukazuk.delete('high_score');
+    await platform.env.marukazuk.delete('monthly_high_score');
   });
 
   describe('GET', () => {
     it('should return scores', async () => {
       await platform.env.marukazuk.put('current_score', '100');
       await platform.env.marukazuk.put('high_score', '1000');
+      await platform.env.marukazuk.put('monthly_high_score', '500');
 
       const context = {
         request: new Request('http://localhost/api/scores'),
@@ -43,6 +45,7 @@ describe('/api/scores', () => {
       expect(json).toEqual({
         current_score: 100,
         high_score: 1000,
+        monthly_high_score: 500,
       });
     });
   });
@@ -51,6 +54,7 @@ describe('/api/scores', () => {
     it('should update scores if new score is higher', async () => {
       await platform.env.marukazuk.put('current_score', '50');
       await platform.env.marukazuk.put('high_score', '500');
+      await platform.env.marukazuk.put('monthly_high_score', '100');
 
       const request = new Request('http://localhost/api/scores', {
         method: 'POST',
@@ -74,17 +78,21 @@ describe('/api/scores', () => {
       expect(json).toEqual({
         current_score: 150,
         high_score: 500, // high_score should not be updated
+        monthly_high_score: 150,
       });
 
       const updated_current_score = await platform.env.marukazuk.get('current_score');
       const updated_high_score = await platform.env.marukazuk.get('high_score');
+      const updated_monthly_high_score = await platform.env.marukazuk.get('monthly_high_score');
       expect(updated_current_score).toBe('150');
       expect(updated_high_score).toBe('500');
+      expect(updated_monthly_high_score).toBe('150');
     });
 
     it('should update both scores if new score is highest', async () => {
       await platform.env.marukazuk.put('current_score', '50');
       await platform.env.marukazuk.put('high_score', '500');
+      await platform.env.marukazuk.put('monthly_high_score', '100');
 
       const request = new Request('http://localhost/api/scores', {
         method: 'POST',
@@ -108,12 +116,15 @@ describe('/api/scores', () => {
       expect(json).toEqual({
         current_score: 600,
         high_score: 600,
+        monthly_high_score: 600,
       });
 
       const updated_current_score = await platform.env.marukazuk.get('current_score');
       const updated_high_score = await platform.env.marukazuk.get('high_score');
+      const updated_monthly_high_score = await platform.env.marukazuk.get('monthly_high_score');
       expect(updated_current_score).toBe('600');
       expect(updated_high_score).toBe('600');
+      expect(updated_monthly_high_score).toBe('600');
     });
   });
 });
