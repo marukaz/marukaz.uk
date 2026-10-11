@@ -5,7 +5,7 @@ export default getViteConfig({
     environment: 'happy-dom',
     setupFiles: './tests/setup.ts',
     include: ['src/**/*.test.ts', 'tests/**/*.test.ts'],
-        exclude: ['**/node_modules/**', '**/dist/**', 'src/pages/_worker.test.ts'],
+    exclude: ['**/node_modules/**', '**/dist/**', 'tests/worker.test.ts'],
     pool: 'forks',
   },
 });

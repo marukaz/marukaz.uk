@@ -1,0 +1,21 @@
+{
+  "name": "marukaz-cron",
+  "compatibility_date": "2025-04-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "./worker.js",
+  "kv_namespaces": [
+    {
+      "binding": "marukazuk",
+      "id": "c24a05ff19db4da4affd9cf1a3d7c415",
+      "preview_id": "c24a05ff19db4da4affd9cf1a3d7c415"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "triggers": {
+    "crons": [
+      "0 15 * * *"
+    ]
+  }
+}

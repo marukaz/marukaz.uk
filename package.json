@@ -40,6 +40,7 @@
     "cf-typegen": "wrangler types",
     "check": "astro check && astro build && wrangler deploy --dry-run",
     "deploy": "wrangler deploy",
+    "deploy:cron": "wrangler deploy --config wrangler-cron.json",
     "dev": "astro dev",
     "preview": "astro build && wrangler dev",
     "test": "vitest run",
